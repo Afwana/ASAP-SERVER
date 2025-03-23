@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 
 export const register = async (req, res) => {
-  const { name, userName, email, password } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!name || !userName || !email || !password) {
+  if (!name || !email || !password) {
     return res.status(400).json({
       success: false,
       message: "Please provide all fields!!",
@@ -27,7 +27,6 @@ export const register = async (req, res) => {
 
     const user = new userModel({
       name,
-      userName,
       email,
       password: hashedPassword,
     });

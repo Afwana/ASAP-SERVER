@@ -12,7 +12,8 @@ cloudinary.config({
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { name, userName, email, phone } = req.body;
+    const { name, email, phone, gender, dob, aadhar, address, guardian } =
+      req.body;
 
     const user = await userModel.findById(userId);
     if (!user) {
@@ -21,15 +22,23 @@ export const updateProfile = async (req, res) => {
         .json({ success: false, message: "User not found!" });
     }
 
-    let updatedData = { name, userName, email, phone, lastUpdated: Date.now() };
+    let updatedData = {
+      name,
+      email,
+      phone,
+      gender,
+      dob,
+      aadhar,
+      address,
+      guardian,
+      lastUpdated: Date.now(),
+    };
 
     if (req.file) {
       const uploadedImage = await cloudinary.uploader.upload(req.file.path, {
         folder: "ASAP",
       });
 
-      console.log("Uploaded Image:", uploadedImage.secure_url);
-      // Delete old profile picture if it exists and is different
       if (
         user.profilePicture &&
         user.profilePicture.includes("cloudinary.com")
@@ -55,8 +64,6 @@ export const updateProfile = async (req, res) => {
       })
       .select("-password"); // Exclude password from response
 
-    console.log("Updated Data:", updatedUser);
-
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully!",
@@ -68,8 +75,12 @@ export const updateProfile = async (req, res) => {
 };
 
 export const getProfile = async (req, res) => {
+  console.log(res);
+
   try {
     const user = await userModel.findById(req.user._id).select("-password");
+    console.log(user);
+
     if (!user) {
       return res
         .status(404)
@@ -80,7 +91,7 @@ export const getProfile = async (req, res) => {
       success: true,
       user,
       lastUpdated: user.lastUpdated,
-      formattedLastUpdated: new Date(user.lastUpdated).toLocaleString(), // ✅ Format date
+      formattedLastUpdated: new Date(user.lastUpdated).toLocaleString(),
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

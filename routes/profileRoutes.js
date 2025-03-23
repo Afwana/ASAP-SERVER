@@ -14,6 +14,6 @@ profileRouter.put(
   upload.single("profilePicture"),
   updateProfile
 );
-profileRouter.get("/get", authMiddleware, getProfile);
+profileRouter.get("/:id", authMiddleware, getProfile);
 
 export default profileRouter;
